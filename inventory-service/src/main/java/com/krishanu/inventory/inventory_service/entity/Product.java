@@ -1,17 +1,19 @@
 package com.krishanu.inventory.inventory_service.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "Product")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "Product")
+@Builder
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

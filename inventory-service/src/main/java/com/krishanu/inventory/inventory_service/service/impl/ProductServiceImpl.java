@@ -9,6 +9,8 @@ import com.krishanu.inventory.inventory_service.mapper.ProductMapper;
 import com.krishanu.inventory.inventory_service.repository.ProductRepository;
 import com.krishanu.inventory.inventory_service.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -34,5 +36,10 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse getProduct(UUID id) {
         Product product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product Not Found"));
         return ProductMapper.toResponse(product);
+    }
+
+    @Override
+    public Page<ProductResponse> getAllProducts(Pageable pageable) {
+        return productRepository.findAll(pageable).map(ProductMapper::toResponse);
     }
 }

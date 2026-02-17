@@ -1,11 +1,11 @@
 package com.krishanu.inventory.inventory_service.controller;
 
+import com.krishanu.inventory.inventory_service.dto.PagedResponse;
 import com.krishanu.inventory.inventory_service.dto.ProductRequest;
 import com.krishanu.inventory.inventory_service.dto.ProductResponse;
 import com.krishanu.inventory.inventory_service.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +32,7 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ProductResponse>> getAllProducts(
+    public ResponseEntity<PagedResponse<ProductResponse>> getAllProducts(
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "10") int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);

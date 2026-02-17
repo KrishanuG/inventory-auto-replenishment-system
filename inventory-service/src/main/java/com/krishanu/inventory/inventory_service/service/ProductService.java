@@ -1,5 +1,6 @@
 package com.krishanu.inventory.inventory_service.service;
 
+import com.krishanu.inventory.inventory_service.dto.PagedResponse;
 import com.krishanu.inventory.inventory_service.dto.ProductRequest;
 import com.krishanu.inventory.inventory_service.dto.ProductResponse;
 import org.springframework.data.domain.Page;
@@ -13,6 +14,6 @@ public interface ProductService {
 
     ProductResponse getProduct(UUID id);
 
-    Page<ProductResponse> getAllProducts(Pageable pageable);
+    PagedResponse<ProductResponse> getAllProducts(Pageable pageable);
 
 }

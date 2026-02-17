@@ -1,5 +1,6 @@
 package com.krishanu.inventory.inventory_service.service.impl;
 
+import com.krishanu.inventory.inventory_service.dto.PagedResponse;
 import com.krishanu.inventory.inventory_service.dto.ProductRequest;
 import com.krishanu.inventory.inventory_service.dto.ProductResponse;
 import com.krishanu.inventory.inventory_service.entity.Product;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -39,7 +41,17 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<ProductResponse> getAllProducts(Pageable pageable) {
-        return productRepository.findAll(pageable).map(ProductMapper::toResponse);
+    public PagedResponse<ProductResponse> getAllProducts(Pageable pageable) {
+        Page<Product> productPage = productRepository.findAll(pageable);
+
+        List<ProductResponse> content = productPage.getContent().stream().map(ProductMapper::toResponse).toList();
+        return PagedResponse.<ProductResponse>builder()
+                .content(content)
+                .pageNumber(productPage.getNumber())
+                .pageSize(productPage.getSize())
+                .totalPages(productPage.getTotalPages())
+                .totalElements(productPage.getTotalElements())
+                .last(productPage.isLast())
+                .build();
     }
 }

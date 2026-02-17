@@ -1,13 +1,17 @@
 package com.krishanu.inventory.inventory_service.controller;
 
+import com.krishanu.inventory.inventory_service.dto.PagedResponse;
 import com.krishanu.inventory.inventory_service.dto.ProductRequest;
 import com.krishanu.inventory.inventory_service.dto.ProductResponse;
 import com.krishanu.inventory.inventory_service.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -24,8 +28,27 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponse> getProduct(@PathVariable UUID id){
+    public ResponseEntity<ProductResponse> getProduct(@PathVariable UUID id) {
         return ResponseEntity.ok(productService.getProduct(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<PagedResponse<ProductResponse>> getAllProducts(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return ResponseEntity.ok(productService.getAllProducts(pageable));
+    }
+
+    @GetMapping("/keyset")
+    public ResponseEntity<PagedResponse<ProductResponse>> getProductsByKeyset(
+            @RequestParam(required = false) LocalDateTime lastCreatedAt,
+            @RequestParam(required = false) UUID lastId,
+            @RequestParam(defaultValue = "5") int size) {
+
+        return ResponseEntity.ok(
+                productService.getProductsByKeyset(lastCreatedAt, lastId, size)
+        );
     }
 
 }

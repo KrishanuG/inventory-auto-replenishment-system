@@ -11,9 +11,12 @@ import com.krishanu.inventory.inventory_service.repository.ProductRepository;
 import com.krishanu.inventory.inventory_service.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,6 +55,33 @@ public class ProductServiceImpl implements ProductService {
                 .totalPages(productPage.getTotalPages())
                 .totalElements(productPage.getTotalElements())
                 .last(productPage.isLast())
+                .build();
+    }
+
+    @Override
+    public PagedResponse<ProductResponse> getProductsByKeyset(LocalDateTime lastCreatedAt, UUID lastId, int size) {
+        Pageable pageable =  PageRequest.of(0, size);
+
+        List<Product> products;
+
+        if (lastCreatedAt == null || lastId == null) {
+            products = productRepository.findFirstPage(pageable);
+        } else {
+            products = productRepository.findNextPage(lastCreatedAt, lastId, pageable);
+        }
+
+        List<ProductResponse> content = products.stream()
+                .map(ProductMapper::toResponse)
+                .toList();
+
+        // We don’t compute full count — because keyset doesn’t rely on total count.
+        return PagedResponse.<ProductResponse>builder()
+                .content(content)
+                .pageNumber(0)
+                .pageSize(size)
+                .totalElements(content.size())
+                .totalPages(1)
+                .last(content.size() < size)
                 .build();
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -38,4 +39,16 @@ public class ProductController {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         return ResponseEntity.ok(productService.getAllProducts(pageable));
     }
+
+    @GetMapping("/keyset")
+    public ResponseEntity<PagedResponse<ProductResponse>> getProductsByKeyset(
+            @RequestParam(required = false) LocalDateTime lastCreatedAt,
+            @RequestParam(required = false) UUID lastId,
+            @RequestParam(defaultValue = "5") int size) {
+
+        return ResponseEntity.ok(
+                productService.getProductsByKeyset(lastCreatedAt, lastId, size)
+        );
+    }
+
 }

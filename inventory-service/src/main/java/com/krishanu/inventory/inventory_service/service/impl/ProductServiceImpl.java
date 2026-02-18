@@ -12,6 +12,7 @@ import com.krishanu.inventory.inventory_service.repository.InventoryRepository;
 import com.krishanu.inventory.inventory_service.repository.ProductRepository;
 import com.krishanu.inventory.inventory_service.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
@@ -30,6 +31,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse createProduct(ProductRequest productRequest) {
+        log.info("----------- createProduct - start ---------------");
+        log.info("creating product with sku: {}", productRequest.getSku());
 
         if (productRepository.existsBySku(productRequest.getSku())) {
             throw new DuplicateResourceException("SKU Already Exists");

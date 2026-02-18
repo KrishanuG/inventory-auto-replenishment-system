@@ -1,4 +1,4 @@
-package com.krishanu.inventory.inventory_service;
+package com.krishanu.inventory.inventory_service.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

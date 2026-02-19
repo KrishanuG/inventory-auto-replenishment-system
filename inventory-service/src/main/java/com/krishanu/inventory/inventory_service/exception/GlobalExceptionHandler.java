@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -18,20 +18,20 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.builder()
                         .message(e.getMessage())
                         .status(HttpStatus.NOT_FOUND.value())
-                        .timestamp(LocalDateTime.now())
+                        .timestamp(Instant.now())
                         .build()
                 );
     }
 
-        @ExceptionHandler(DuplicateResourceException.class)
-        public ResponseEntity<ErrorResponse> handleResourceDuplication(DuplicateResourceException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(ErrorResponse.builder()
-                            .message(e.getMessage())
-                            .status(HttpStatus.CONFLICT.value())
-                            .timestamp(LocalDateTime.now())
-                            .build()
-                    );
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ErrorResponse> handleResourceDuplication(DuplicateResourceException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ErrorResponse.builder()
+                        .message(e.getMessage())
+                        .status(HttpStatus.CONFLICT.value())
+                        .timestamp(Instant.now())
+                        .build()
+                );
 
     }
 
@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.builder()
                         .message(ex.getMessage())
                         .status(HttpStatus.BAD_REQUEST.value())
-                        .timestamp(LocalDateTime.now())
+                        .timestamp(Instant.now())
                         .build());
     }
 
@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.builder()
                         .message("Invalid request parameter: " + ex.getName())
                         .status(HttpStatus.BAD_REQUEST.value())
-                        .timestamp(LocalDateTime.now())
+                        .timestamp(Instant.now())
                         .build());
     }
 
@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.builder()
                         .message("Something went wrong")
                         .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                        .timestamp(LocalDateTime.now())
+                        .timestamp(Instant.now())
                         .build()
                 );
 

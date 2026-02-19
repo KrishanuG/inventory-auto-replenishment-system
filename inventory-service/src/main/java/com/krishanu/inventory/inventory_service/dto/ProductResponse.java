@@ -3,7 +3,7 @@ package com.krishanu.inventory.inventory_service.dto;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter
@@ -20,6 +20,6 @@ public class ProductResponse {
     private BigDecimal price;
     private Integer minStockThreshold;
     private Integer maxStockThreshold;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 }

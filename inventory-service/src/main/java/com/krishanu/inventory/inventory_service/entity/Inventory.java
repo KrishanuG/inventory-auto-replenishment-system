@@ -3,7 +3,7 @@ package com.krishanu.inventory.inventory_service.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter
@@ -19,7 +19,7 @@ public class Inventory {
     private UUID id;
 
     @OneToOne
-    @JoinColumn(name = "product_id",  nullable = false, unique = true)
+    @JoinColumn(name = "product_id", nullable = false, unique = true)
     private Product product;
 
     @Column(nullable = false)
@@ -28,11 +28,11 @@ public class Inventory {
     @Column(nullable = false)
     private Integer reservedQuantity;
 
-    private LocalDateTime lastUpdatedAt;
+    private Instant lastUpdatedAt;
 
     @PrePersist
     @PreUpdate
-    public void updateTimestamp(){
-        lastUpdatedAt = LocalDateTime.now();
+    public void updateTimestamp() {
+        lastUpdatedAt = Instant.now();
     }
 }

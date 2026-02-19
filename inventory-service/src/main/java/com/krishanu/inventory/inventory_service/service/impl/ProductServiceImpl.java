@@ -16,12 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -72,8 +72,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public PagedResponse<ProductResponse> getProductsByKeyset(LocalDateTime lastCreatedAt, UUID lastId, int size) {
-        Pageable pageable =  PageRequest.of(0, size);
+    public PagedResponse<ProductResponse> getProductsByKeyset(Instant lastCreatedAt, UUID lastId, int size) {
+        Pageable pageable = PageRequest.of(0, size);
 
         List<Product> products;
 

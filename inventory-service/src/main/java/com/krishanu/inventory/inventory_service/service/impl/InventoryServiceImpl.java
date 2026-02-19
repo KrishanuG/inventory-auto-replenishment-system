@@ -3,16 +3,20 @@ package com.krishanu.inventory.inventory_service.service.impl;
 import com.krishanu.inventory.inventory_service.dto.InventoryResponse;
 import com.krishanu.inventory.inventory_service.entity.Inventory;
 import com.krishanu.inventory.inventory_service.entity.Product;
+import com.krishanu.inventory.inventory_service.event.StockEvent;
+import com.krishanu.inventory.inventory_service.event.producer.StockEventProducer;
 import com.krishanu.inventory.inventory_service.exception.InsufficientStockException;
 import com.krishanu.inventory.inventory_service.repository.InventoryRepository;
 import com.krishanu.inventory.inventory_service.repository.ProductRepository;
 import com.krishanu.inventory.inventory_service.service.InventoryService;
+import com.krishanu.inventory.inventory_service.utils.StockTypeEnum;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Slf4j
@@ -23,6 +27,7 @@ import java.util.UUID;
 public class InventoryServiceImpl implements InventoryService {
     private final InventoryRepository inventoryRepository;
     private final ProductRepository productRepository;
+    private final StockEventProducer stockEventProducer;
 
     @Override
     public InventoryResponse increaseStock(UUID productId, Integer quantity) {
@@ -34,7 +39,7 @@ public class InventoryServiceImpl implements InventoryService {
         inventory.setQuantity(inventory.getQuantity() + quantity);
         log.info("New stock level for productId={} is {}", productId, inventory.getQuantity());
 
-        return buildInventoryResponse(inventory);
+        return buildInventoryResponse(inventory, false);
     }
 
     @Override
@@ -51,7 +56,32 @@ public class InventoryServiceImpl implements InventoryService {
         inventory.setQuantity(inventory.getQuantity() - quantity);
         log.info("stock updated - new stock for productId={} is {}", productId, inventory.getQuantity());
 
-        return buildInventoryResponse(inventory);
+        //publish sale event
+        StockEvent stockEvent = StockEvent.builder()
+                .productId(productId)
+                .type(StockTypeEnum.SALE)
+                .quantity(quantity)
+                .timestamp(Instant.now())
+                .build();
+
+        stockEventProducer.publish(stockEvent);
+
+        boolean lowStock = inventory.getQuantity() < inventory.getProduct().getMinStockThreshold();
+
+        //publish low stock event
+        if (lowStock) {
+            log.warn("Low stock detected for productId={} | currentQuantity={}",
+                    productId, inventory.getQuantity());
+            StockEvent lowStockEvent = StockEvent.builder()
+                    .productId(productId)
+                    .type(StockTypeEnum.LOW_STOCK)
+                    .quantity(inventory.getQuantity())
+                    .timestamp(Instant.now())
+                    .build();
+
+            stockEventProducer.publish(lowStockEvent);
+        }
+        return buildInventoryResponse(inventory, lowStock);
     }
 
     private Inventory getInventoryByProductId(UUID productId) {
@@ -64,13 +94,12 @@ public class InventoryServiceImpl implements InventoryService {
                 orElseThrow(() -> new ResourceNotFoundException("Inventory not found with id " + productId));
     }
 
-    private InventoryResponse buildInventoryResponse(Inventory inventory) {
-        boolean lowStock = inventory.getQuantity() < inventory.getProduct().getMinStockThreshold();
+    private InventoryResponse buildInventoryResponse(Inventory inventory, boolean lowStockStatus) {
         return InventoryResponse.builder()
                 .productId(inventory.getProduct().getId())
                 .quantity(inventory.getQuantity())
                 .reservedQuantity(inventory.getReservedQuantity())
-                .lowStock(lowStock)
+                .lowStock(lowStockStatus)
                 .build();
     }
 }

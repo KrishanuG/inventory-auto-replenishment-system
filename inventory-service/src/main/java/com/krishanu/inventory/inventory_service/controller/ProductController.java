@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @RestController
@@ -42,7 +42,7 @@ public class ProductController {
 
     @GetMapping("/keyset")
     public ResponseEntity<PagedResponse<ProductResponse>> getProductsByKeyset(
-            @RequestParam(required = false) LocalDateTime lastCreatedAt,
+            @RequestParam(required = false) Instant lastCreatedAt,
             @RequestParam(required = false) UUID lastId,
             @RequestParam(defaultValue = "5") int size) {
 

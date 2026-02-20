@@ -58,6 +58,7 @@ public class InventoryServiceImpl implements InventoryService {
 
         //publish sale event
         StockEvent stockEvent = StockEvent.builder()
+                .eventId(UUID.randomUUID().toString())
                 .productId(productId)
                 .type(StockTypeEnum.SALE)
                 .quantity(quantity)

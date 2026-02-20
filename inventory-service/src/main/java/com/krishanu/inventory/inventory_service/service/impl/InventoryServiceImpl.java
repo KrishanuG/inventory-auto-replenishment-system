@@ -75,6 +75,7 @@ public class InventoryServiceImpl implements InventoryService {
                     productId, inventory.getQuantity());
             StockEvent lowStockEvent = StockEvent.builder()
                     .productId(productId)
+                    .eventId(UUID.randomUUID().toString())
                     .type(StockTypeEnum.LOW_STOCK)
                     .quantity(inventory.getQuantity())
                     .timestamp(Instant.now())

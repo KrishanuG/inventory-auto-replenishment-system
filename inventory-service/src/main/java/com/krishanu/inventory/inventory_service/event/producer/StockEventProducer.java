@@ -17,13 +17,14 @@ public class StockEventProducer {
     private final ObjectMapper objectMapper;
 
     @Value("${app.kafka.topics.stock-event}")
-    private String topic; ;
+    private String topic;
+    ;
 
     public void publish(StockEvent stockEvent) {
         log.info("Publishing stock event to kafka : {}", stockEvent.getType());
         try {
             String payload = objectMapper.writeValueAsString(stockEvent);
-            kafkaTemplate.send(topic, payload)
+            kafkaTemplate.send(topic, stockEvent.getProductId().toString(), payload)
                     .whenComplete((result, ex) -> {
                         if (ex == null) {
                             log.info("Event sent successfully to topic={}, partition={}, offset={}",

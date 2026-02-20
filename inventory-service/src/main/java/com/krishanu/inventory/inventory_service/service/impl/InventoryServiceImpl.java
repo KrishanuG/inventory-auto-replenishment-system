@@ -58,6 +58,7 @@ public class InventoryServiceImpl implements InventoryService {
 
         //publish sale event
         StockEvent stockEvent = StockEvent.builder()
+                .eventId(UUID.randomUUID().toString())
                 .productId(productId)
                 .type(StockTypeEnum.SALE)
                 .quantity(quantity)
@@ -74,6 +75,7 @@ public class InventoryServiceImpl implements InventoryService {
                     productId, inventory.getQuantity());
             StockEvent lowStockEvent = StockEvent.builder()
                     .productId(productId)
+                    .eventId(UUID.randomUUID().toString())
                     .type(StockTypeEnum.LOW_STOCK)
                     .quantity(inventory.getQuantity())
                     .timestamp(Instant.now())
@@ -84,7 +86,7 @@ public class InventoryServiceImpl implements InventoryService {
         return buildInventoryResponse(inventory, lowStock);
     }
 
-    private Inventory getInventoryByProductId(UUID productId) {
+    public Inventory getInventoryByProductId(UUID productId) {
 
         Product product = productRepository.findById(productId).
                 orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + productId)

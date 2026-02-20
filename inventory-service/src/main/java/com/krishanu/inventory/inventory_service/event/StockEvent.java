@@ -11,6 +11,7 @@ import java.util.UUID;
 @Builder
 public class StockEvent {
     private UUID productId;
+    private String eventId; // to check idempotency
     private int quantity;
     private StockTypeEnum type; // SALE or LOW_STOCK
     private Instant timestamp;

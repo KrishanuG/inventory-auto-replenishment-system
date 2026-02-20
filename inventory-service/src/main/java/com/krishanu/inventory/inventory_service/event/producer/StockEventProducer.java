@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.krishanu.inventory.inventory_service.event.StockEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -15,13 +16,15 @@ public class StockEventProducer {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
-    private static final String TOPIC = "stock_event";
+    @Value("${app.kafka.topics.stock-event}")
+    private String topic;
+    ;
 
     public void publish(StockEvent stockEvent) {
         log.info("Publishing stock event to kafka : {}", stockEvent.getType());
         try {
             String payload = objectMapper.writeValueAsString(stockEvent);
-            kafkaTemplate.send(TOPIC, payload)
+            kafkaTemplate.send(topic, stockEvent.getProductId().toString(), payload)
                     .whenComplete((result, ex) -> {
                         if (ex == null) {
                             log.info("Event sent successfully to topic={}, partition={}, offset={}",

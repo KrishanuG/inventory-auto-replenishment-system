@@ -22,6 +22,7 @@ app:
   kafka:
      topics:
        stock-event: stock-event
+       stock-event-dlt: stock-event-dlt
      group-id:
        inventory: inventory-group
 

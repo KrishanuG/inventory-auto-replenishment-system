@@ -65,4 +65,9 @@ public class StockEventConsumer {
                         .build());
 
     }
+
+    @KafkaListener(topics = "${app.kafka.topics.stock-event-dlt}", groupId = "${app.kafka.group-id.inventory}")
+    public void handleDeadLetter(String message) {
+        log.error("DLT Received Failed Message: {}", message);
+    }
 }

@@ -17,8 +17,13 @@ spring:
           time_zone: UTC
   kafka:
     bootstrap-servers: localhost:9092
-    properties:
-      spring.json.add.type.headers: false
+
+app:
+  kafka:
+     topics:
+       stock-event: stock-event
+     group-id:
+       inventory: inventory-group
 
 server:
   port: 8080

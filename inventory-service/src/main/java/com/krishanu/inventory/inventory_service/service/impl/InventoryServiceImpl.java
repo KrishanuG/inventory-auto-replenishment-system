@@ -84,7 +84,7 @@ public class InventoryServiceImpl implements InventoryService {
         return buildInventoryResponse(inventory, lowStock);
     }
 
-    private Inventory getInventoryByProductId(UUID productId) {
+    public Inventory getInventoryByProductId(UUID productId) {
 
         Product product = productRepository.findById(productId).
                 orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + productId)

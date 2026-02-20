@@ -15,7 +15,7 @@ public class StockEventProducer {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
-    private static final String TOPIC = "stock_event";
+    private static final String TOPIC = "stock-event";
 
     public void publish(StockEvent stockEvent) {
         log.info("Publishing stock event to kafka : {}", stockEvent.getType());

@@ -4,6 +4,7 @@ import com.krishanu.inventory.inventory_service.dto.InventoryResponse;
 import com.krishanu.inventory.inventory_service.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -14,6 +15,7 @@ import java.util.UUID;
 public class InventoryController {
     private final InventoryService inventoryService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{productId}/stock/increase")
     public ResponseEntity<InventoryResponse> increaseStock(
             @PathVariable UUID productId,
@@ -22,6 +24,7 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryService.increaseStock(productId, quantity));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{productId}/stock/decrease")
     public ResponseEntity<InventoryResponse> decreaseStock(
             @PathVariable UUID productId,

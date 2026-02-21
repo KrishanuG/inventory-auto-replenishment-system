@@ -19,6 +19,10 @@ spring:
     bootstrap-servers: localhost:9092
 
 app:
+  security:
+    jwt:
+      secret: mySuperSecretKeyThatIsAtLeast32CharactersLong
+      expiration: 3600000
   kafka:
      topics:
        stock-event: stock-event

@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -28,11 +29,12 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<ProductResponse> getProduct(@PathVariable UUID id) {
         return ResponseEntity.ok(productService.getProduct(id));
     }
-
     @GetMapping
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<PagedResponse<ProductResponse>> getAllProducts(
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "10") int pageSize) {
@@ -41,6 +43,7 @@ public class ProductController {
     }
 
     @GetMapping("/keyset")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<PagedResponse<ProductResponse>> getProductsByKeyset(
             @RequestParam(required = false) Instant lastCreatedAt,
             @RequestParam(required = false) UUID lastId,

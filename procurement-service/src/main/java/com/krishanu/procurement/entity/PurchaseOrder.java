@@ -1,6 +1,6 @@
-package com.krishanu.inventory.entity;
+package com.krishanu.procurement.entity;
 
-import com.krishanu.inventory.utils.PurchaseOrderStatus;
+import com.krishanu.procurement.utils.PurchaseOrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,6 +1,6 @@
-package com.krishanu.inventory.service.event;
+package com.krishanu.procurement.service.event;
 
-import com.krishanu.inventory.utils.StockTypeEnum;
+import com.krishanu.procurement.utils.StockTypeEnum;
 import lombok.Builder;
 import lombok.Getter;
 

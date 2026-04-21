@@ -1,6 +1,6 @@
-package com.krishanu.inventory.repository;
+package com.krishanu.procurement.repository;
 
-import com.krishanu.inventory.entity.PurchaseOrder;
+import com.krishanu.procurement.entity.PurchaseOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

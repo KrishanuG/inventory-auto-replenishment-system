@@ -10,6 +10,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+import java.util.UUID;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -38,5 +41,23 @@ public class StockEventConsumer {
     @KafkaListener(topics = "${app.kafka.topics.stock-event-dlt}", groupId = "${app.kafka.group-id.inventory}")
     public void handleDeadLetter(String message) {
         log.error("DLT Received Failed Message: {}", message);
+    }
+
+    @KafkaListener(
+            topics = "${app.kafka.topics.receive-goods}",
+            groupId = "${app.kafka.group-id.inventory}"
+    )
+    @Transactional
+    public void consumeReceiveGoods(String message) throws Exception {
+
+        Map<String, Object> event =
+                objectMapper.readValue(message, Map.class);
+
+        UUID productId = UUID.fromString((String) event.get("productId"));
+        int quantity = (int) event.get("quantity");
+
+        log.info("Received goods for productId={} quantity={}", productId, quantity);
+
+        inventoryService.increaseStock(productId, quantity);
     }
 }

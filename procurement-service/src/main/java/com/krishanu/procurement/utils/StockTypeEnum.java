@@ -1,4 +1,4 @@
-package com.krishanu.inventory.utils;
+package com.krishanu.procurement.utils;
 
 public enum StockTypeEnum {
     SALE,

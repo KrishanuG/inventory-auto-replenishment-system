@@ -18,7 +18,6 @@ public class StockEventProducer {
 
     @Value("${app.kafka.topics.stock-event}")
     private String topic;
-    ;
 
     public void publish(StockEvent stockEvent) {
         log.info("Publishing stock event to kafka : {}", stockEvent.getType());

@@ -1,10 +1,10 @@
-package com.krishanu.inventory.service.event;
+package com.krishanu.procurement.service.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.krishanu.inventory.entity.PurchaseOrder;
-import com.krishanu.inventory.repository.PurchaseOrderRepository;
-import com.krishanu.inventory.utils.PurchaseOrderStatus;
-import com.krishanu.inventory.utils.StockTypeEnum;
+import com.krishanu.procurement.entity.PurchaseOrder;
+import com.krishanu.procurement.repository.PurchaseOrderRepository;
+import com.krishanu.procurement.utils.PurchaseOrderStatus;
+import com.krishanu.procurement.utils.StockTypeEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;

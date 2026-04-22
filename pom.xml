@@ -21,8 +21,17 @@
     </properties>
 
     <modules>
+        <module>common-lib</module>
         <module>inventory-service</module>
         <module>procurement-service</module>
     </modules>
-
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.krishanu.inventory</groupId>
+                <artifactId>common-lib</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

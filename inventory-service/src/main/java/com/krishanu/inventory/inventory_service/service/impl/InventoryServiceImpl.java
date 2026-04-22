@@ -8,7 +8,7 @@ import com.krishanu.inventory.inventory_service.exception.InsufficientStockExcep
 import com.krishanu.inventory.inventory_service.repository.InventoryRepository;
 import com.krishanu.inventory.inventory_service.repository.ProductRepository;
 import com.krishanu.inventory.inventory_service.service.InventoryService;
-import com.krishanu.inventory.inventory_service.utils.StockTypeEnum;
+import com.krishanu.inventory.common.event.StockTypeEnum;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

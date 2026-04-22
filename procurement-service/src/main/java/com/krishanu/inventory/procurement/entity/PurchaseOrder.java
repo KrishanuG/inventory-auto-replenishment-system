@@ -1,6 +1,6 @@
-package com.krishanu.inventory.inventory_service.entity;
+package com.krishanu.inventory.procurement.entity;
 
-import com.krishanu.inventory.common.event.StockTypeEnum;
+import com.krishanu.inventory.procurement.utils.PurchaseOrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,26 +8,26 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "event_logs")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class EventLog {
+@Table(name = "purchase_orders")
+public class PurchaseOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String eventId;
-
     private UUID productId;
-
-    @Enumerated(EnumType.STRING)
-    private StockTypeEnum eventType;
 
     private Integer quantity;
 
-    private Instant timestamp;
+    @Enumerated(EnumType.STRING)
+    private PurchaseOrderStatus status;
+
+    private Instant createdAt;
+
+    private Instant updatedAt;
 }

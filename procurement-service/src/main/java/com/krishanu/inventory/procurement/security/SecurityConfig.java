@@ -1,4 +1,5 @@
-package com.krishanu.inventory.inventory_service.security;
+package com.krishanu.inventory.procurement.security;
+
 
 import com.krishanu.inventory.common.security.JwtFilter;
 import lombok.RequiredArgsConstructor;

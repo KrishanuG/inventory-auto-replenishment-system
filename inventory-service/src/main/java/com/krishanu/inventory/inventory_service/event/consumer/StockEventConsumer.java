@@ -1,7 +1,7 @@
 package com.krishanu.inventory.inventory_service.event.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.krishanu.inventory.inventory_service.event.StockEvent;
+import com.krishanu.inventory.common.event.StockEvent;
 import com.krishanu.inventory.inventory_service.repository.ProcessedEventRepository;
 import com.krishanu.inventory.inventory_service.service.InventoryService;
 import lombok.RequiredArgsConstructor;

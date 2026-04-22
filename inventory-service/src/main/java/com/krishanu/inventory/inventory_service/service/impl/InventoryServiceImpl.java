@@ -3,7 +3,6 @@ package com.krishanu.inventory.inventory_service.service.impl;
 import com.krishanu.inventory.inventory_service.dto.InventoryResponse;
 import com.krishanu.inventory.inventory_service.entity.Inventory;
 import com.krishanu.inventory.inventory_service.entity.Product;
-import com.krishanu.inventory.inventory_service.event.StockEvent;
 import com.krishanu.inventory.inventory_service.event.producer.StockEventProducer;
 import com.krishanu.inventory.inventory_service.exception.InsufficientStockException;
 import com.krishanu.inventory.inventory_service.repository.InventoryRepository;
@@ -54,18 +53,11 @@ public class InventoryServiceImpl implements InventoryService {
         }
         // Hibernate dirty checking will persist this change on transaction commit, no need to save explicitly
         inventory.setQuantity(inventory.getQuantity() - quantity);
+
         log.info("stock updated - new stock for productId={} is {}", productId, inventory.getQuantity());
 
         //publish sale event
-        StockEvent stockEvent = StockEvent.builder()
-                .eventId(UUID.randomUUID().toString())
-                .productId(productId)
-                .type(StockTypeEnum.SALE)
-                .quantity(quantity)
-                .timestamp(Instant.now())
-                .build();
-
-        stockEventProducer.publish(stockEvent);
+        stockEventProducer.publishStock(productId, quantity, StockTypeEnum.SALE);
 
         boolean lowStock = inventory.getQuantity() < inventory.getProduct().getMinStockThreshold();
 
@@ -73,15 +65,7 @@ public class InventoryServiceImpl implements InventoryService {
         if (lowStock) {
             log.warn("Low stock detected for productId={} | currentQuantity={}",
                     productId, inventory.getQuantity());
-            StockEvent lowStockEvent = StockEvent.builder()
-                    .productId(productId)
-                    .eventId(UUID.randomUUID().toString())
-                    .type(StockTypeEnum.LOW_STOCK)
-                    .quantity(inventory.getQuantity())
-                    .timestamp(Instant.now())
-                    .build();
-
-            stockEventProducer.publish(lowStockEvent);
+            stockEventProducer.publishStock(productId, quantity, StockTypeEnum.LOW_STOCK);
         }
         return buildInventoryResponse(inventory, lowStock);
     }
@@ -122,14 +106,7 @@ public class InventoryServiceImpl implements InventoryService {
 
         log.warn("Stock damaged for productId={} quantity={}", productId, quantity);
 
-        StockEvent event = StockEvent.builder()
-                .eventId(UUID.randomUUID().toString())
-                .productId(productId)
-                .quantity(quantity)
-                .type(StockTypeEnum.DAMAGE)
-                .timestamp(Instant.now())
-                .build();
-
-        stockEventProducer.publish(event);
+        //publish damage stock event
+        stockEventProducer.publishStock(productId, quantity, StockTypeEnum.DAMAGE);
     }
 }

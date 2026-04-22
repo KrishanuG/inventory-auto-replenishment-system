@@ -104,4 +104,32 @@ public class InventoryServiceImpl implements InventoryService {
                 .lowStock(lowStockStatus)
                 .build();
     }
+
+    @Override
+    @Transactional
+    public void damageStock(UUID productId, int quantity) {
+
+        Inventory inventory = getInventoryByProductId(productId);
+
+        if (inventory.getQuantity() < quantity) {
+            throw new IllegalArgumentException("Insufficient stock to mark damage");
+        }
+
+        inventory.setQuantity(inventory.getQuantity() - quantity);
+        inventory.setLastUpdatedAt(Instant.now());
+
+        inventoryRepository.save(inventory);
+
+        log.warn("Stock damaged for productId={} quantity={}", productId, quantity);
+
+        StockEvent event = StockEvent.builder()
+                .eventId(UUID.randomUUID().toString())
+                .productId(productId)
+                .quantity(quantity)
+                .type(StockTypeEnum.DAMAGE)
+                .timestamp(Instant.now())
+                .build();
+
+        stockEventProducer.publish(event);
+    }
 }

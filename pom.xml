@@ -10,12 +10,16 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <name>inventory-auto-replenishment-system</name>
+
+    <!-- Spring Boot Parent -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.4.1</version>
         <relativePath/>
     </parent>
+
     <properties>
         <java.version>17</java.version>
     </properties>
@@ -24,14 +28,36 @@
         <module>common-lib</module>
         <module>inventory-service</module>
         <module>procurement-service</module>
+        <module>auth-service</module>
     </modules>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.krishanu.inventory</groupId>
-                <artifactId>common-lib</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                    <jvmArguments>-Duser.timezone=UTC</jvmArguments>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

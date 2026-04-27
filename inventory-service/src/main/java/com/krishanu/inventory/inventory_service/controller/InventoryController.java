@@ -32,4 +32,14 @@ public class InventoryController {
     ) {
         return ResponseEntity.ok(inventoryService.decreaseStock(productId, quantity));
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{productId}/damage")
+    public ResponseEntity<?> damageStock(
+            @PathVariable UUID productId,
+            @RequestParam int quantity
+    ) {
+        inventoryService.damageStock(productId, quantity);
+        return ResponseEntity.ok("Stock damaged successfully");
+    }
 }

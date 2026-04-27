@@ -1,4 +1,4 @@
-package com.krishanu.inventory.inventory_service.security;
+package com.krishanu.inventory.authentication.security;
 
 import com.krishanu.inventory.common.security.JwtFilter;
 import lombok.RequiredArgsConstructor;

@@ -1,15 +1,12 @@
-package com.krishanu.inventory.inventory_service;
+package com.krishanu.inventory.authentication;
+
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.kafka.annotation.EnableKafka;
 
 @SpringBootApplication(scanBasePackages = "com.krishanu.inventory")
-@EnableKafka
-public class InventoryServiceApplication {
-
+public class AuthServiceApplication {
     public static void main(String[] args) {
-        SpringApplication.run(InventoryServiceApplication.class, args);
+        SpringApplication.run(AuthServiceApplication.class, args);
     }
-
 }

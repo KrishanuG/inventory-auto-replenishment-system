@@ -1,4 +1,4 @@
-package com.krishanu.inventory.inventory_service.security;
+package com.krishanu.inventory.common.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

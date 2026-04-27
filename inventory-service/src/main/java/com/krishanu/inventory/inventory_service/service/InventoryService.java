@@ -12,4 +12,6 @@ public interface InventoryService {
 
     Inventory getInventoryByProductId(UUID productId);
 
+    void damageStock(UUID productId, int quantity);
+
 }

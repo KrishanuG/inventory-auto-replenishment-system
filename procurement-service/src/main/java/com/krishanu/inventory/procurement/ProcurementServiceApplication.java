@@ -1,10 +1,10 @@
-package com.krishanu.inventory;
+package com.krishanu.inventory.procurement;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.kafka.annotation.EnableKafka;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.krishanu.inventory")
 @EnableKafka
 public class ProcurementServiceApplication {
 

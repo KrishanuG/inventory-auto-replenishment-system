@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/inventory_db
+    username: inventory_user
+    password: inventory_pass
+
+server:
+  port: 8082
+
+app:
+  security:
+    jwt:
+      secret: mySuperSecretKeyThatIsAtLeast32CharactersLong
+      expiration: 3600000

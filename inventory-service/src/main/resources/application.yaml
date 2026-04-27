@@ -27,6 +27,7 @@ app:
      topics:
        stock-event: stock-event
        stock-event-dlt: stock-event-dlt
+       receive-goods: receive-goods
      group-id:
        inventory: inventory-group
 

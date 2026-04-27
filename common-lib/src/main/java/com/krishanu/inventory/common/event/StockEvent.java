@@ -1,6 +1,5 @@
-package com.krishanu.inventory.inventory_service.event;
+package com.krishanu.inventory.common.event;
 
-import com.krishanu.inventory.inventory_service.utils.StockTypeEnum;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,6 +12,6 @@ public class StockEvent {
     private UUID productId;
     private String eventId; // to check idempotency
     private int quantity;
-    private StockTypeEnum type; // SALE or LOW_STOCK
+    private StockTypeEnum type; // SALE or LOW_STOCK or DAMAGE
     private Instant timestamp;
 }

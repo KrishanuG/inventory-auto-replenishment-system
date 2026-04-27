@@ -1,4 +1,4 @@
-package com.krishanu.inventory.inventory_service.dto;
+package com.krishanu.inventory.common.security;
 
 import lombok.Builder;
 import lombok.Getter;

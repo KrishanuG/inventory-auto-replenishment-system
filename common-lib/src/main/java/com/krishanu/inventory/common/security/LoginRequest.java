@@ -2,10 +2,12 @@ package com.krishanu.inventory.common.security;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
 @Builder
+@RequiredArgsConstructor
 public class LoginRequest {
-    private String username;
-    private String password;
+    private final String username;
+    private final String password;
 }

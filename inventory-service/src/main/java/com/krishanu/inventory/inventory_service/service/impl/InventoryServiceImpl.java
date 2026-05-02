@@ -65,7 +65,7 @@ public class InventoryServiceImpl implements InventoryService {
         if (lowStock) {
             log.warn("Low stock detected for productId={} | currentQuantity={}",
                     productId, inventory.getQuantity());
-            stockEventProducer.publishStock(productId, quantity, StockTypeEnum.LOW_STOCK);
+            stockEventProducer.publishStock(productId, inventory.getQuantity(), StockTypeEnum.LOW_STOCK);
         }
         return buildInventoryResponse(inventory, lowStock);
     }

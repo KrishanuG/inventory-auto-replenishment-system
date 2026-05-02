@@ -60,10 +60,11 @@ A microservices-based system that automatically generates purchase orders when i
 | Language | Java 17 |
 | Framework | Spring Boot 3.4.1 |
 | Security | Spring Security + JWT (jjwt 0.11.5) |
-| Auth | Centralized JWT authentication |
+| Auth | Dedicated Auth Service (JWT-based) |
 | Messaging | Apache Kafka (KRaft mode) |
 | Database | PostgreSQL 15 |
 | ORM | Spring Data JPA + Hibernate 6 |
+| Testing | JUnit 5 + Mockito |
 | Containerization | Docker + Docker Compose |
 | Cloud | AWS EC2 (free tier) |
 | Build | Maven (multi-module) |
@@ -284,6 +285,21 @@ JWT_EXPIRATION=3600000
 | `.idea/` | IntelliJ project files |
 
 ---
+## Testing
+
+Unit tests are implemented for critical business flows using JUnit 5 and Mockito.
+
+### Coverage Focus
+
+- Inventory stock operations (increase/decrease, LOW_STOCK trigger)
+- Kafka consumer idempotency and duplicate event handling
+- Authentication logic (JWT generation and validation)
+
+### Run Tests
+
+```bash
+mvn test
+```
 
 ## Key Design Decisions
 

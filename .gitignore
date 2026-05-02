@@ -1,0 +1,6 @@
+# --- Environment files ---
+.env
+**/target/
+# --- IDE specific files ---
+.idea/
+*.iml

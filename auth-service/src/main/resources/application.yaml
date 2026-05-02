@@ -2,9 +2,17 @@ spring:
   application:
     name: auth-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/inventory_db
-    username: inventory_user
-    password: inventory_pass
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/inventory_db}
+    username: ${SPRING_DATASOURCE_USERNAME:inventory_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:inventory_pass}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          time_zone: UTC
 
 server:
   port: 8082
@@ -12,5 +20,5 @@ server:
 app:
   security:
     jwt:
-      secret: mySuperSecretKeyThatIsAtLeast32CharactersLong
-      expiration: 3600000
+      secret: ${APP_SECURITY_JWT_SECRET:mySuperSecretKeyThatIsAtLeast32CharactersLong}
+      expiration: ${APP_SECURITY_JWT_EXPIRATION:3600000}

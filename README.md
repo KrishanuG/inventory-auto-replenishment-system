@@ -1,9 +1,19 @@
-# Event-Driven Inventory Auto-Replenishment System
+# Distributed Event-Driven Inventory Management System (Spring Boot + Kafka + AWS)
 
 A microservices-based system that automatically generates purchase orders when inventory falls below a configured threshold, using an event-driven architecture with Apache Kafka.
 
 ---
+## Features
 
+- Event-driven microservices architecture
+- Automatic purchase order generation (LOW_STOCK trigger)
+- Centralized JWT authentication (auth-service)
+- Kafka-based async communication with retry + DLT
+- Idempotent consumers to prevent duplicate processing
+- Keyset pagination for high-performance querying
+- Dockerized deployment with AWS EC2 hosting
+
+---
 ## Architecture
 
 ```
@@ -26,7 +36,23 @@ A microservices-based system that automatically generates purchase orders when i
 **Flow:** When stock drops below `minStockThreshold`, inventory-service publishes a `LOW_STOCK` event to Kafka. Procurement-service consumes it and automatically creates a Purchase Order.
 
 ---
+### Authentication Flow
 
+- `auth-service` handles user authentication and JWT token generation.
+- Other services (inventory, procurement) validate JWT tokens using `common-lib`.
+- Ensures centralized authentication with decentralized authorization.
+
+---
+### End-to-End Flow
+
+1. User decreases stock via inventory-service
+2. If below threshold → `LOW_STOCK` event published to Kafka
+3. procurement-service consumes event
+4. Purchase Order is created automatically
+5. On approval + receive → `RECEIVE_GOODS` event published
+6. inventory-service consumes event → stock increased
+
+---
 ## Tech Stack
 
 | Layer | Technology |
@@ -34,12 +60,14 @@ A microservices-based system that automatically generates purchase orders when i
 | Language | Java 17 |
 | Framework | Spring Boot 3.4.1 |
 | Security | Spring Security + JWT (jjwt 0.11.5) |
+| Auth | Centralized JWT authentication |
 | Messaging | Apache Kafka (KRaft mode) |
 | Database | PostgreSQL 15 |
 | ORM | Spring Data JPA + Hibernate 6 |
 | Containerization | Docker + Docker Compose |
 | Cloud | AWS EC2 (free tier) |
 | Build | Maven (multi-module) |
+
 
 ---
 
@@ -130,6 +158,13 @@ Services will connect to Docker-hosted Postgres and Kafka via `localhost`.
 
 # Start everything
 docker compose up -d --build
+
+This starts:
+- PostgreSQL database
+- Kafka (KRaft mode)
+- inventory-service
+- procurement-service
+- auth-service
 
 # Check status
 docker compose ps
@@ -252,8 +287,8 @@ JWT_EXPIRATION=3600000
 
 ## Key Design Decisions
 
-- **Idempotency:** Each Kafka event carries a unique `eventId`. `ProcessedEvent` table prevents duplicate processing on consumer retry.
-- **Dead Letter Topic:** Failed Kafka messages after 3 retries are routed to `stock-event-dlt` for inspection.
-- **Keyset Pagination:** `/api/products/keyset` uses cursor-based pagination for efficient large dataset traversal.
-- **Dirty Checking:** `InventoryServiceImpl` relies on Hibernate dirty checking inside `@Transactional` — no explicit `save()` needed for stock updates.
-- **Shared Library:** `common-lib` module holds JWT logic and event DTOs to avoid duplication across services.
+- **Idempotent Event Processing:** Each Kafka event carries a unique `eventId`. A ProcessedEvent table ensures duplicate messages (due to retries or rebalancing) are ignored, guaranteeing exactly-once logical processing
+- **Event Reliability with Retry & Dead Letter Topic:** Kafka consumers use retry with backoff for transient failures. Messages that fail after retries are routed to a Dead Letter Topic `stock-event-dlt` for later inspection and recovery.
+- **Efficient Pagination Strategy:** Keyset (cursor-based) pagination is implemented for `/api/products/keyset` to handle large datasets efficiently and avoid performance issues of offset-based pagination.
+- **Optimized Persistence using Dirty Checking:** Inventory updates rely on Hibernate’s dirty checking within transactional boundaries `@Transactional` - no explicit `save()` needed for stock updates, reducing unnecessary database writes and improving performance.
+- **Shared Library:** `common-lib` module holds common DTOs, JWT utilities, and event models are centralized to ensure consistency across services and avoid duplication..

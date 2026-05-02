@@ -22,3 +22,21 @@ app:
     jwt:
       secret: ${APP_SECURITY_JWT_SECRET:mySuperSecretKeyThatIsAtLeast32CharactersLong}
       expiration: ${APP_SECURITY_JWT_EXPIRATION:3600000}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: ${spring.application.name}
+    version: 0.0.1-SNAPSHOT
+    description: Event-Driven Inventory Auto-Replenishment System

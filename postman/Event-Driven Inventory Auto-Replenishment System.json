@@ -1,0 +1,660 @@
+{
+  "info": {
+    "_postman_id": "61b2924b-be77-4dd0-a59a-f44066da58fa",
+    "name": "Event-Driven Inventory Auto-Replenishment System",
+    "description": "Complete API collection for the Event-Driven Inventory Auto-Replenishment System deployed on AWS EC2.\n\n## How to use\n1. Run 'Login as Admin' request first\n2. Token is automatically saved to collection variable\n3. All subsequent requests use the token automatically\n\n## Live Base URL\nhttp://54.253.24.96",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "14439093"
+  },
+  "item": [
+    {
+      "name": "1. Auth Service",
+      "item": [
+        {
+          "name": "Login as Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var response = pm.response.json();",
+                  "pm.collectionVariables.set('token', response.token);",
+                  "console.log('Token saved:', response.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}:8082/api/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "8082",
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Authenticates as admin and automatically saves JWT token to collection variable. All subsequent requests use this token automatically."
+          },
+          "response": []
+        },
+        {
+          "name": "Login as User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var response = pm.response.json();",
+                  "pm.collectionVariables.set('token', response.token);",
+                  "console.log('Token saved:', response.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"user\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}:8082/api/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "8082",
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Authenticates as a regular user (READ-only access). Admin-only endpoints will return 403."
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check - Auth Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}:8082/actuator/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "8082",
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "Returns DB connectivity status. No JWT required."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Product Management",
+      "item": [
+        {
+          "name": "Create Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var response = pm.response.json();",
+                  "pm.collectionVariables.set('product_id', response.id);",
+                  "console.log('Product ID saved:', response.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Widget A\",\n  \"sku\": \"SKU-001\",\n  \"description\": \"Sample product for demo\",\n  \"price\": 99.99,\n  \"minStockThreshold\": 10,\n  \"maxStockThreshold\": 100\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}:8080/api/products",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "description": "Creates a new product and automatically saves product ID to collection variable. minStockThreshold=10 means LOW_STOCK fires when quantity drops below 10."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Products (Offset Pagination)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}:8080/api/products?pageNumber=0&pageSize=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "pageNumber",
+                  "value": "0"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Standard offset-based pagination. Returns paginated product list with totalElements, totalPages."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Products (Keyset Pagination)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}:8080/api/products/keyset?size=5",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "products",
+                "keyset"
+              ],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "5"
+                },
+                {
+                  "key": "lastCreatedAt",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "lastId",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Cursor-based keyset pagination using createdAt + UUID composite cursor. Eliminates full table scans on large datasets. Enable lastCreatedAt and lastId params for next page."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}:8080/api/products/{{product_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "products",
+                "{{product_id}}"
+              ]
+            },
+            "description": "Fetch single product by UUID."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Inventory Management",
+      "item": [
+        {
+          "name": "Increase Stock",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}:8080/api/inventory/{{product_id}}/stock/increase?quantity=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "inventory",
+                "{{product_id}}",
+                "stock",
+                "increase"
+              ],
+              "query": [
+                {
+                  "key": "quantity",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Increases stock by given quantity. Returns current inventory state including lowStock flag."
+          },
+          "response": []
+        },
+        {
+          "name": "Decrease Stock (Triggers LOW_STOCK Event)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}:8080/api/inventory/{{product_id}}/stock/decrease?quantity=15",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "inventory",
+                "{{product_id}}",
+                "stock",
+                "decrease"
+              ],
+              "query": [
+                {
+                  "key": "quantity",
+                  "value": "15"
+                }
+              ]
+            },
+            "description": "Decreases stock by 15 (from 20 → 5). Since 5 < minStockThreshold(10), lowStock=true is returned and a LOW_STOCK event is published to Kafka. Procurement-service consumes the event and auto-creates a Purchase Order."
+          },
+          "response": []
+        },
+        {
+          "name": "Damage Stock",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}:8080/api/inventory/{{product_id}}/damage?quantity=2",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "inventory",
+                "{{product_id}}",
+                "damage"
+              ],
+              "query": [
+                {
+                  "key": "quantity",
+                  "value": "2"
+                }
+              ]
+            },
+            "description": "Marks stock as damaged. Publishes DAMAGE event to Kafka and reduces available quantity."
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check - Inventory Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}:8080/actuator/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "8080",
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "Returns DB + Kafka connectivity status. No JWT required."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Analytics",
+      "item": [
+        {
+          "name": "Fast Moving Products",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}:8080/api/analytics/fast-moving",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "analytics",
+                "fast-moving"
+              ]
+            },
+            "description": "Returns products ranked by total sales quantity from event_logs table."
+          },
+          "response": []
+        },
+        {
+          "name": "Stock Out Trends",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}:8080/api/analytics/stock-outs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "analytics",
+                "stock-outs"
+              ]
+            },
+            "description": "Returns products ranked by number of LOW_STOCK events — identifies chronically understocked items."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Procurement Service",
+      "item": [
+        {
+          "name": "Get All Purchase Orders",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var response = pm.response.json();",
+                  "if (response.length > 0) {",
+                  "  pm.collectionVariables.set('purchase_order_id', response[0].id);",
+                  "  console.log('Purchase Order ID saved:', response[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}:8081/api/purchase-orders",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "purchase-orders"
+              ]
+            },
+            "description": "Returns all purchase orders sorted by createdAt DESC. Auto-created orders from LOW_STOCK Kafka events appear here with status CREATED."
+          },
+          "response": []
+        },
+        {
+          "name": "Approve Purchase Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}:8081/api/purchase-orders/{{purchase_order_id}}/approve",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "purchase-orders",
+                "{{purchase_order_id}}",
+                "approve"
+              ]
+            },
+            "description": "Transitions Purchase Order from CREATED → APPROVED. Only ADMIN role can approve."
+          },
+          "response": []
+        },
+        {
+          "name": "Receive Purchase Order (Replenishes Stock)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}:8081/api/purchase-orders/{{purchase_order_id}}/receive",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "purchase-orders",
+                "{{purchase_order_id}}",
+                "receive"
+              ]
+            },
+            "description": "Transitions APPROVED → RECEIVED and publishes RECEIVE_GOODS event to Kafka. Inventory-service consumes it and increases stock automatically — completing the full replenishment cycle."
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check - Procurement Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}:8081/actuator/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "8081",
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "Returns DB + Kafka connectivity status. No JWT required."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Role-Based Access Control (Demo)",
+      "item": [
+        {
+          "name": "USER role - Read Products (allowed)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}:8080/api/products",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "description": "Login as USER first, then run this. Should return 200."
+          },
+          "response": []
+        },
+        {
+          "name": "USER role - Increase Stock (forbidden)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}:8080/api/inventory/{{product_id}}/stock/increase?quantity=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "inventory",
+                "{{product_id}}",
+                "stock",
+                "increase"
+              ],
+              "query": [
+                {
+                  "key": "quantity",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Login as USER first, then run this. Should return 403 Forbidden — only ADMIN can modify stock."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://54.253.24.96"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "product_id",
+      "value": ""
+    },
+    {
+      "key": "purchase_order_id",
+      "value": ""
+    }
+  ]
+}

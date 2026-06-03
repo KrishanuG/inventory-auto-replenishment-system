@@ -98,6 +98,8 @@ Base URL: `http://54.253.24.96`
 | Inventory | `POST http://54.253.24.96:8080/api/inventory/{productId}/stock/increase` |
 | Purchase Orders | `GET http://54.253.24.96:8081/api/purchase-orders` |
 
+> 💡 Most endpoints require JWT. Import the Postman collection from `/postman` folder for a ready-to-run demo with auto token management.
+
 ---
 
 ## Running Locally
